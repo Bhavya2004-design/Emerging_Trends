@@ -1,0 +1,40 @@
+import React from 'react';
+
+const NAV_ITEMS = [
+  { id: 'home', label: 'Home', path: 'home', icon: 'home' },
+  { id: 'scan', label: 'Scan', path: 'scan', icon: 'scan' },
+  { id: 'vault', label: 'Vault', path: 'vault', icon: 'vault' },
+  { id: 'community', label: 'Community', path: 'community', icon: 'community' },
+  { id: 'profile', label: 'Profile', path: 'profile', icon: 'profile' },
+];
+
+const ICONS = {
+  home: <><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></>,
+  scan: <><path d="M3 5h2v2H3V5z" /><path d="M19 5h2v2h-2V5z" /><path d="M3 17h2v2H3v-2z" /><path d="M19 17h2v2h-2v-2z" /><line x1="4" y1="12" x2="20" y2="12" /></>,
+  vault: <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />,
+  community: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  profile: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>,
+};
+
+function BottomNav({ activeId, onNavigate }) {
+  return (
+    <nav className="home-bottom-nav" aria-label="Main navigation">
+      {NAV_ITEMS.map(({ id, label, path }) => (
+        <button
+          key={id}
+          type="button"
+          className={`home-nav-item${activeId === id ? ' home-nav-active' : ''}`}
+          aria-current={activeId === id ? 'page' : undefined}
+          onClick={() => onNavigate && onNavigate(path)}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {ICONS[id]}
+          </svg>
+          <span>{label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+export default BottomNav;
