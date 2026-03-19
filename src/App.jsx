@@ -11,7 +11,7 @@ import { HomePage } from './pages/home';
 import { ScanPage } from './pages/scan';
 import { VaultPage } from './pages/vault';
 import { CommunityPage } from './pages/community';
-import { ProfilePage, EditProfilePage, NotificationsPage } from './pages/profile';
+import { ProfilePage, EditProfilePage, NotificationsPage, PrivacyPage, AppSettingsPage } from './pages/profile';
 
 const PAGES = {
   splash: 'splash',
@@ -27,6 +27,8 @@ const PAGES = {
   profile: 'profile',
   editProfile: 'editProfile',
   notifications: 'notifications',
+  privacy: 'privacy',
+  appSettings: 'appSettings',
 };
 
 const SPLASH_DURATION_MS = 4000;
@@ -57,6 +59,8 @@ function App() {
   if (page === PAGES.profile) return <ProfilePage onNavigate={goTo} />;
   if (page === PAGES.editProfile) return <EditProfilePage onNavigate={goTo} />;
   if (page === PAGES.notifications) return <NotificationsPage onNavigate={goTo} />;
+  if (page === PAGES.privacy) return <PrivacyPage onNavigate={goTo} />;
+  if (page === PAGES.appSettings) return <AppSettingsPage onNavigate={goTo} />;
 
   return null;
 }

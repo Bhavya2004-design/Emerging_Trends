@@ -1,18 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import BottomNav from '../../components/BottomNav';
 
 const BIO_MAX = 120;
 
+const INITIAL = {
+  fullName: 'Maria',
+  username: '@maria12345',
+  bio: 'Fashion and travel lover 🌿\nReady ro mix & match!',
+  gender: 'Female',
+  profileImage: null,
+};
+
 function EditProfilePage({ onNavigate }) {
-  const [fullName, setFullName] = useState('Maria');
-  const [username, setUsername] = useState('@maria12345');
-  const [bio, setBio] = useState('Fashion and travel lover 🌿\nReady ro mix & match!');
-  const [gender, setGender] = useState('Female');
+  const [fullName, setFullName] = useState(INITIAL.fullName);
+  const [username, setUsername] = useState(INITIAL.username);
+  const [bio, setBio] = useState(INITIAL.bio);
+  const [gender, setGender] = useState(INITIAL.gender);
+  const [profileImage, setProfileImage] = useState(INITIAL.profileImage);
+  const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [pendingNavigatePath, setPendingNavigatePath] = useState(null);
+  const fileInputRef = useRef(null);
   const email = 'maria.smith@gmail.com';
+
+  const hasChanges =
+    fullName !== INITIAL.fullName ||
+    username !== INITIAL.username ||
+    bio !== INITIAL.bio ||
+    gender !== INITIAL.gender ||
+    profileImage !== INITIAL.profileImage;
+
+  const handleNavigateAway = (path) => {
+    if (hasChanges) {
+      setPendingNavigatePath(path);
+      setShowDiscardModal(true);
+      return;
+    }
+    onNavigate(path);
+  };
+
+  const handleDiscardConfirm = () => {
+    if (pendingNavigatePath) onNavigate(pendingNavigatePath);
+    setShowDiscardModal(false);
+    setPendingNavigatePath(null);
+  };
+
+  const handleDiscardCancel = () => {
+    setShowDiscardModal(false);
+    setPendingNavigatePath(null);
+  };
 
   const handleSave = (e) => {
     e.preventDefault();
     onNavigate('profile');
+  };
+
+  const handleEditAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => setProfileImage(reader.result);
+    reader.readAsDataURL(file);
+    e.target.value = '';
   };
 
   const bioCount = bio.length;
@@ -24,7 +76,7 @@ function EditProfilePage({ onNavigate }) {
           type="button"
           className="profile-back"
           aria-label="Back"
-          onClick={() => onNavigate('profile')}
+          onClick={() => handleNavigateAway('profile')}
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -35,9 +87,21 @@ function EditProfilePage({ onNavigate }) {
 
       <div className="edit-profile-content">
         <div className="edit-profile-avatar-section">
-          <div className="edit-profile-avatar" aria-hidden="true" />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="edit-profile-avatar-input"
+            aria-label="Upload profile picture"
+            onChange={handleAvatarFileChange}
+          />
+          <div className="edit-profile-avatar" aria-hidden="true">
+            {profileImage ? (
+              <img src={profileImage} alt="" className="edit-profile-avatar-img" />
+            ) : null}
+          </div>
           <p className="edit-profile-display-name">Maria Smith</p>
-          <button type="button" className="btn btn-edit-avatar">
+          <button type="button" className="btn btn-edit-avatar" onClick={handleEditAvatarClick}>
             Edit
           </button>
         </div>
@@ -120,7 +184,43 @@ function EditProfilePage({ onNavigate }) {
         </form>
       </div>
 
-      <BottomNav activeId="profile" onNavigate={onNavigate} />
+      <BottomNav activeId="profile" onNavigate={handleNavigateAway} />
+
+      {showDiscardModal && (
+        <div className="discard-modal-backdrop" onClick={handleDiscardCancel}>
+          <div
+            className="discard-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="discard-modal-title"
+            aria-describedby="discard-modal-desc"
+          >
+            <h2 id="discard-modal-title" className="discard-modal-title">
+              Discard changes?
+            </h2>
+            <p id="discard-modal-desc" className="discard-modal-desc">
+              Are you sure you want to discard the changes?
+            </p>
+            <div className="discard-modal-actions">
+              <button
+                type="button"
+                className="btn btn-outline discard-modal-btn-cancel"
+                onClick={handleDiscardCancel}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary discard-modal-btn-discard"
+                onClick={handleDiscardConfirm}
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
